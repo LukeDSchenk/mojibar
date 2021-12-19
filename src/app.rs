@@ -93,11 +93,16 @@ impl epi::App for TemplateApp {
             ui.heading("Emojis 🌵");
             egui::warn_if_debug_build(ui);
 
-            for _ in 1..70 {
-                if ui.button("🏃").clicked() {
-                    cb.set_contents("🏃".to_owned()).unwrap();
+            ui.horizontal(|ui| {
+                for _ in 1..3 {
+                    if ui.button("🏃").clicked() {
+                        cb.set_contents("🏃".to_owned()).unwrap();
+                    }
                 }
-            }
+                if ui.button("🙂").clicked() {
+                    cb.set_contents("🙂".to_owned()).unwrap();
+                }
+            });
 
         });
 
