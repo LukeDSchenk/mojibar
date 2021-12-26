@@ -1,7 +1,18 @@
-extern crate clipboard;
-
 use clipboard::{ClipboardContext, ClipboardProvider};
 use eframe::{egui, epi};
+use lazy_static::lazy_static;
+use std::fs::File;
+use std::io::Read;
+use std::str::Chars;
+
+lazy_static! {
+    static ref EMOJIS: String = {
+        let mut f = File::open("./emojis/emojis.txt").expect("Could not open font file: ./emojis/emojis.txt");
+        let mut buffer = String::new();
+        f.read_to_string(&mut buffer).expect("Could not read font file to a string");
+        buffer
+    };
+}
 
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 #[cfg_attr(feature = "persistence", derive(serde::Deserialize, serde::Serialize))]
@@ -53,9 +64,11 @@ impl epi::App for TemplateApp {
             egui::TextStyle::Button,
             (egui::FontFamily::Proportional, 32.0)
         );
-        fonts.font_data.insert("NotoColor".to_owned(), std::borrow::Cow::Borrowed(include_bytes!("../fonts/NotoColorEmoji.ttf")));
-        fonts.fonts_for_family.get_mut(&egui::FontFamily::Proportional).unwrap()
-            .push("NotoColor".to_owned());
+
+        // Try and set up custom fonts here.
+        //fonts.font_data.insert("NotoColor".to_owned(), std::borrow::Cow::Borrowed(include_bytes!("../fonts/NotoColorEmoji.ttf")));
+        //fonts.fonts_for_family.get_mut(&egui::FontFamily::Proportional).unwrap().insert(0, "NotoColor".to_owned());
+
         _ctx.set_fonts(fonts);
     }
 
@@ -93,26 +106,15 @@ impl epi::App for TemplateApp {
             ui.heading("Emojis 🌵");
             egui::warn_if_debug_build(ui);
 
-            ui.horizontal(|ui| {
-                for _ in 1..3 {
-                    if ui.button("🏃").clicked() {
-                        cb.set_contents("🏃".to_owned()).unwrap();
+            ui.horizontal_wrapped(|ui| {
+                for c in EMOJIS.chars() {
+                    if ui.button(c).clicked() {
+                        cb.set_contents(c.to_string()).unwrap();
+                        println!("{}", c);
                     }
-                }
-                if ui.button("🙂").clicked() {
-                    cb.set_contents("🙂".to_owned()).unwrap();
                 }
             });
 
         });
-
-        if false {
-            egui::Window::new("Window").show(ctx, |ui| {
-                ui.label("Windows can be moved by dragging them.");
-                ui.label("They are automatically sized based on contents.");
-                ui.label("You can turn on resizing and scrolling if you like.");
-                ui.label("You would normally chose either panels OR windows.");
-            });
-        }
     }
 }
