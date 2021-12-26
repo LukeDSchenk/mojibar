@@ -1,7 +1,20 @@
-# Mojibar
+# Mojibar (still very early development)
 
-A quick access tab and search bar for emojis.
+A quick access tab and search bar for emojis. Simply click the emoji you want to use and it will be copied to your clipboard!
 
-## Feature idea
+## Coming Soon
 
-Make the Woozy face the icon, and add a custom feature where clicking the icon simply copies the woozy face to the clipboard or something. 
+* Search bar
+* UI improvements
+* Scroll bars
+* Many more supported emojis
+* Hover for emoji descriptions
+
+## Down the line
+
+Features I want but am not prioritizing right now.
+
+* Custom fonts
+* Favorite emojis
+
+

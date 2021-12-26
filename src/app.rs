@@ -3,7 +3,6 @@ use eframe::{egui, epi};
 use lazy_static::lazy_static;
 use std::fs::File;
 use std::io::Read;
-use std::str::Chars;
 
 lazy_static! {
     static ref EMOJIS: String = {
@@ -23,17 +22,15 @@ pub struct TemplateApp {
     cb: ClipboardContext,
 
     // this how you opt-out of serialization of a member
-    #[cfg_attr(feature = "persistence", serde(skip))]
-    value: i32,
+    //#[cfg_attr(feature = "persistence", serde(skip))]
+    //value: i32,
 }
 
 impl Default for TemplateApp {
     fn default() -> Self {
         Self {
-            // Example stuff:
-            search: "".to_owned(),
+            search: "Coming soon!".to_owned(),
             cb: ClipboardProvider::new().unwrap(),
-            value: 0,
         }
     }
 }
@@ -62,10 +59,10 @@ impl epi::App for TemplateApp {
         let mut fonts = egui::FontDefinitions::default();
         fonts.family_and_size.insert(
             egui::TextStyle::Button,
-            (egui::FontFamily::Proportional, 32.0)
+            (egui::FontFamily::Proportional, 33.0)
         );
 
-        // Try and set up custom fonts here.
+        // Try and set up custom fonts here. Not currently working.
         //fonts.font_data.insert("NotoColor".to_owned(), std::borrow::Cow::Borrowed(include_bytes!("../fonts/NotoColorEmoji.ttf")));
         //fonts.fonts_for_family.get_mut(&egui::FontFamily::Proportional).unwrap().insert(0, "NotoColor".to_owned());
 
@@ -82,18 +79,7 @@ impl epi::App for TemplateApp {
     /// Called each time the UI needs repainting, which may be many times per second.
     /// Put your wilet search_bar = ui.text_edit_singleline(&mut "".to_string());dgets into a `SidePanel`, `TopPanel`, `CentralPanel`, `Window` or `Area`.
     fn update(&mut self, ctx: &egui::CtxRef, frame: &mut epi::Frame<'_>) {
-        let Self { search, cb, value } = self;
-
-        egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
-            // The top panel is often a good place for a menu bar:
-            egui::menu::bar(ui, |ui| {
-                egui::menu::menu(ui, "File", |ui| {
-                    if ui.button("Quit").clicked() {
-                        frame.quit();
-                    }
-                });
-            });
-        });
+        let Self { search, cb } = self;
 
         egui::SidePanel::left("side_panel").show(ctx, |ui| {
             ui.heading("Search 🔍");
