@@ -69,7 +69,7 @@ impl epi::App for TemplateApp {
         _ctx.set_fonts(fonts);
     }
 
-    /// Called by the frame work to save state before shutdown.
+    /// Called by the framework to save state before shutdown.
     /// Note that you must enable the `persistence` feature for this to work.
     #[cfg(feature = "persistence")]
     fn save(&mut self, storage: &mut dyn epi::Storage) {
@@ -86,21 +86,21 @@ impl epi::App for TemplateApp {
             let search_bar = ui.text_edit_singleline(search);
         });
 
+        // The central panel is the region left after adding TopPanel's and SidePanel's.
         egui::CentralPanel::default().show(ctx, |ui| {
-            // The central panel the region left after adding TopPanel's and SidePanel's
-
             ui.heading("Emojis 🌵");
             egui::warn_if_debug_build(ui);
 
-            ui.horizontal_wrapped(|ui| {
-                for c in EMOJIS.chars() {
-                    if ui.button(c).clicked() {
-                        cb.set_contents(c.to_string()).unwrap();
-                        println!("{}", c);
+            egui::ScrollArea::vertical().show(ui, |ui| {
+                ui.horizontal_wrapped(|ui| {
+                    for c in EMOJIS.chars() {
+                        if ui.button(c).clicked() {
+                            cb.set_contents(c.to_string()).unwrap();
+                            println!("{}", c);
+                        }
                     }
-                }
+                });
             });
-
         });
     }
 }

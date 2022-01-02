@@ -6,7 +6,6 @@ A quick access tab and search bar for emojis. Simply click the emoji you want to
 
 * Search bar
 * UI improvements
-* Scroll bars
 * Many more supported emojis
 * Hover for emoji descriptions
 
