@@ -1,7 +1,7 @@
 [package]
-name = "eframe_template"
+name = "mojibar"
 version = "0.1.0"
-authors = ["Emil Ernerfeldt <emilernerfeldt@gmail.com>"]
+authors = ["Luke Schenk <nineofpine@protonmail.com>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

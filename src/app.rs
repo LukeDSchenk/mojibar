@@ -78,12 +78,12 @@ impl epi::App for TemplateApp {
 
     /// Called each time the UI needs repainting, which may be many times per second.
     /// Put your wilet search_bar = ui.text_edit_singleline(&mut "".to_string());dgets into a `SidePanel`, `TopPanel`, `CentralPanel`, `Window` or `Area`.
-    fn update(&mut self, ctx: &egui::CtxRef, frame: &mut epi::Frame<'_>) {
+    fn update(&mut self, ctx: &egui::CtxRef, _frame: &mut epi::Frame<'_>) {
         let Self { search, cb } = self;
 
         egui::SidePanel::left("side_panel").show(ctx, |ui| {
             ui.heading("Search 🔍");
-            let search_bar = ui.text_edit_singleline(search);
+            let _search_bar = ui.text_edit_singleline(search); // remove underscore when ready
         });
 
         // The central panel is the region left after adding TopPanel's and SidePanel's.
