@@ -63,8 +63,8 @@ impl epi::App for TemplateApp {
         );
 
         // Try and set up custom fonts here. Not currently working.
-        //fonts.font_data.insert("NotoColor".to_owned(), std::borrow::Cow::Borrowed(include_bytes!("../fonts/NotoColorEmoji.ttf")));
-        //fonts.fonts_for_family.get_mut(&egui::FontFamily::Proportional).unwrap().insert(0, "NotoColor".to_owned());
+        fonts.font_data.insert("OpenMoji".to_owned(), std::borrow::Cow::Borrowed(include_bytes!("../fonts/OpenMoji-Color.ttf")));
+        fonts.fonts_for_family.get_mut(&egui::FontFamily::Proportional).unwrap().insert(0, "OpenMoji".to_owned());
 
         _ctx.set_fonts(fonts);
     }
