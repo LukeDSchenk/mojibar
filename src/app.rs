@@ -59,7 +59,7 @@ impl epi::App for TemplateApp {
         let mut fonts = egui::FontDefinitions::default();
         fonts.family_and_size.insert(
             egui::TextStyle::Button,
-            (egui::FontFamily::Proportional, 33.0)
+            (egui::FontFamily::Proportional, 36.0)
         );
 
         // Try and set up custom fonts here. Not currently working.
