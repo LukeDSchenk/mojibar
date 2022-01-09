@@ -2,16 +2,6 @@ use std::fmt;
 use std::fs;
 use serde::Deserialize;
 
-impl fmt::Display for Vec<String> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Vec<String>[ ");
-        for x in &self {
-            write!(f, "{}, ", x);
-        }
-        write!(f, "]");
-    }
-}
-
 #[derive(Deserialize)]
 pub struct Emoji {
     pub name: String,
@@ -21,7 +11,7 @@ pub struct Emoji {
 
 impl fmt::Display for Emoji {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Emoji<| name: \"{}\", ch: \"{}\", keywords: \"{}\" |>", self.name, self.ch, self.keywords)
+        write!(f, "Emoji<| name: \"{}\", ch: \"{}\", keywords: \"{:?}\" |>", self.name, self.ch, self.keywords)
     }
 }
 
