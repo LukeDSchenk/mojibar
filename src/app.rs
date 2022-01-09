@@ -4,6 +4,8 @@ use lazy_static::lazy_static;
 use std::fs::File;
 use std::io::Read;
 
+use crate::emoji::{self, Emoji};
+
 lazy_static! {
     static ref EMOJIS: String = {
         let mut f = File::open("./emojis/emojis.txt").expect("Could not open font file: ./emojis/emojis.txt");
@@ -11,6 +13,7 @@ lazy_static! {
         f.read_to_string(&mut buffer).expect("Could not read font file to a string");
         buffer
     };
+    static ref E: Vec<Emoji> = emoji::load_emoji_data("./emojis/emojis.json");
 }
 
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
@@ -67,6 +70,7 @@ impl epi::App for TemplateApp {
         fonts.fonts_for_family.get_mut(&egui::FontFamily::Proportional).unwrap().insert(0, "OpenMoji".to_owned());
 
         _ctx.set_fonts(fonts);
+        println!("{}", E);
     }
 
     /// Called by the framework to save state before shutdown.
