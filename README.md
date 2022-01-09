@@ -16,4 +16,7 @@ Features I want but am not prioritizing right now.
 * Custom fonts
 * Favorite emojis
 
+# To Do
 
+* Switch up the Emoji struct to use a u32 unicode scalar instead of a char
+  * Also reparse the emoji.json file with Python so that it can deserialize into a vector

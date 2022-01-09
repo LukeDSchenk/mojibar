@@ -16,7 +16,7 @@ impl fmt::Display for Emoji {
 }
 
 pub fn load_emoji_data(filename: &str) -> Vec<Emoji> {
-    let j = fs::read_to_string(filename).expect("Could not read file to string");
+    let j = fs::read_to_string(filename).expect("Could not read emoji.json file to string");
     let emojis: Vec<Emoji> = serde_json::from_str(&j).expect("Could not deserialize JSON emoji data");
     emojis
 }

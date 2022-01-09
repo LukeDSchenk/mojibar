@@ -13,8 +13,7 @@ lazy_static! {
         f.read_to_string(&mut buffer).expect("Could not read font file to a string");
         buffer
     };
-    #[derive(Debug)]
-    static ref EMOS: Vec<Emoji> = emoji::load_emoji_data("./emojis/emojis.json");
+    static ref EMOS: Vec<Emoji> = emoji::load_emoji_data("./emojis/emoji.json");
 }
 
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
@@ -71,7 +70,7 @@ impl epi::App for TemplateApp {
         fonts.fonts_for_family.get_mut(&egui::FontFamily::Proportional).unwrap().insert(0, "OpenMoji".to_owned());
 
         _ctx.set_fonts(fonts);
-        println!("{:?}", EMOS);
+        println!("{}", EMOS[0]);
     }
 
     /// Called by the framework to save state before shutdown.
