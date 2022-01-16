@@ -18,5 +18,5 @@ Features I want but am not prioritizing right now.
 
 # To Do
 
-* Switch up the Emoji struct to use a u32 unicode scalar instead of a char
-  * Also reparse the emoji.json file with Python so that it can deserialize into a vector
+* Make it so the default window size is somewhat large, but once you set up a favorites tab you can default it to opening small and only showing favorites, or favorites and search, etc.
+* Make some random emojis pop up in the window title on each run
