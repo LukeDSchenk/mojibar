@@ -70,7 +70,7 @@ impl epi::App for TemplateApp {
         fonts.fonts_for_family.get_mut(&egui::FontFamily::Proportional).unwrap().insert(0, "OpenMoji".to_owned());
 
         _ctx.set_fonts(fonts);
-        println!("{}", EMOS[0]);
+        println!("{}", EMOS[1700]);
     }
 
     /// Called by the framework to save state before shutdown.

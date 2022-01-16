@@ -5,7 +5,7 @@ use serde::Deserialize;
 #[derive(Deserialize)]
 pub struct Emoji {
     pub name: String,
-    pub ch: char,
+    pub ch: String,
     pub keywords: Vec<String>,
 }
 
