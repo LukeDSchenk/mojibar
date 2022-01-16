@@ -13,32 +13,29 @@ lazy_static! {
         f.read_to_string(&mut buffer).expect("Could not read font file to a string");
         buffer
     };
-    static ref EMOS: Vec<Emoji> = emoji::load_emoji_data("./emojis/emoji.json");
+    static ref EMOS: Vec<Emoji> = emoji::load_emoji_data("./emojis/emoji-min.json");
 }
 
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 #[cfg_attr(feature = "persistence", derive(serde::Deserialize, serde::Serialize))]
 #[cfg_attr(feature = "persistence", serde(default))] // if we add new fields, give them default values when deserializing old state
-pub struct TemplateApp {
-    // Example stuff:
+pub struct MojiApp {
     search: String,
+    selected: String,
     cb: ClipboardContext,
-
-    // this how you opt-out of serialization of a member
-    //#[cfg_attr(feature = "persistence", serde(skip))]
-    //value: i32,
 }
 
-impl Default for TemplateApp {
+impl Default for MojiApp {
     fn default() -> Self {
         Self {
-            search: "Coming soon!".to_owned(),
+            search: String::from("Coming soon!"),
+            selected: String::from(" "),
             cb: ClipboardProvider::new().unwrap(),
         }
     }
 }
 
-impl epi::App for TemplateApp {
+impl epi::App for MojiApp {
     fn name(&self) -> &str {
         "Mojibar 🥴"
     }
@@ -64,13 +61,19 @@ impl epi::App for TemplateApp {
             egui::TextStyle::Button,
             (egui::FontFamily::Proportional, 36.0)
         );
+        fonts.family_and_size.insert(
+            egui::TextStyle::Body,
+            (egui::FontFamily::Proportional, 16.0)
+        );
+        fonts.family_and_size.insert(
+            egui::TextStyle::Heading,
+            (egui::FontFamily::Proportional, 30.0)
+        );
 
         // Try and set up custom fonts here. Not currently working.
         fonts.font_data.insert("OpenMoji".to_owned(), std::borrow::Cow::Borrowed(include_bytes!("../fonts/OpenMoji-Color.ttf")));
         fonts.fonts_for_family.get_mut(&egui::FontFamily::Proportional).unwrap().insert(0, "OpenMoji".to_owned());
-
         _ctx.set_fonts(fonts);
-        println!("{}", EMOS[1700]);
     }
 
     /// Called by the framework to save state before shutdown.
@@ -83,24 +86,30 @@ impl epi::App for TemplateApp {
     /// Called each time the UI needs repainting, which may be many times per second.
     /// Put your wilet search_bar = ui.text_edit_singleline(&mut "".to_string());dgets into a `SidePanel`, `TopPanel`, `CentralPanel`, `Window` or `Area`.
     fn update(&mut self, ctx: &egui::CtxRef, _frame: &mut epi::Frame<'_>) {
-        let Self { search, cb } = self;
+        let Self { search, selected, cb } = self;
 
         egui::SidePanel::left("side_panel").show(ctx, |ui| {
+            ui.add_space(5.0);
             ui.heading("Search 🔍");
             let _search_bar = ui.text_edit_singleline(search); // remove underscore when ready
         });
 
         // The central panel is the region left after adding TopPanel's and SidePanel's.
         egui::CentralPanel::default().show(ctx, |ui| {
-            ui.heading("Emojis 🌵");
-            egui::warn_if_debug_build(ui);
+            ui.horizontal(|ui| {
+                ui.heading("Selected: ");
+                ui.heading(&selected);
+                egui::warn_if_debug_build(ui);
+            });
+            ui.add_space(15.0);
 
             egui::ScrollArea::vertical().show(ui, |ui| {
                 ui.horizontal_wrapped(|ui| {
-                    for c in EMOJIS.chars() {
-                        if ui.button(c).clicked() {
-                            cb.set_contents(c.to_string()).unwrap();
-                            println!("{}", c);
+                    for emoji in EMOS.iter() {
+                        if ui.button(&emoji.ch).on_hover_text(&emoji.name).clicked() {
+                            cb.set_contents(emoji.ch.clone()).unwrap();
+                            *selected = emoji.ch.clone();
+                            println!("{}", emoji.ch);
                         }
                     }
                 });

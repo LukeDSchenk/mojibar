@@ -4,7 +4,7 @@
 
 mod app;
 mod emoji;
-pub use app::TemplateApp;
+pub use app::MojiApp;
 
 // ----------------------------------------------------------------------------
 // When compiling for web:
