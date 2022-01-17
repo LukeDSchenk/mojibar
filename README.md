@@ -20,3 +20,8 @@ Features I want but am not prioritizing right now.
 
 * Make it so the default window size is somewhat large, but once you set up a favorites tab you can default it to opening small and only showing favorites, or favorites and search, etc.
 * Make some random emojis pop up in the window title on each run
+
+#### useful links
+
+* [egui demo](https://emilk.github.io/egui/#demo)
+* [demo source code](https://docs.rs/epi/0.16.0/src/epi/lib.rs.html#226-239)
