@@ -2,7 +2,7 @@ use std::fmt;
 use std::fs;
 use serde::Deserialize;
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct Emoji {
     pub name: String,
     pub ch: String,

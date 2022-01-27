@@ -1,19 +1,23 @@
 use clipboard::{ClipboardContext, ClipboardProvider};
 use eframe::{egui, epi};
 use lazy_static::lazy_static;
-use std::fs::File;
-use std::io::Read;
+use radix_tree::{Node, Radix};
 
 use crate::emoji::{self, Emoji};
 
 lazy_static! {
-    static ref EMOJIS: String = {
-        let mut f = File::open("./emojis/emojis.txt").expect("Could not open font file: ./emojis/emojis.txt");
-        let mut buffer = String::new();
-        f.read_to_string(&mut buffer).expect("Could not read font file to a string");
-        buffer
-    };
-    static ref EMOS: Vec<Emoji> = emoji::load_emoji_data("./emojis/emoji-min.json");
+    static ref EMOJIS: Vec<Emoji> = emoji::load_emoji_data("./emojis/emoji-min.json"); // this should actually return a result possibly
+    static ref TREE: Node<char, &'static Emoji> = create_radix_tree();
+}
+
+fn create_radix_tree() -> Node<char, &'static Emoji> {
+    let mut tree = Node::<char, &Emoji>::new("", None);
+    for emoji in EMOJIS.iter() {
+        for word in emoji.keywords.iter() {
+            tree.insert(word.as_str(), &emoji);
+        }
+    }
+    tree
 }
 
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
@@ -28,7 +32,7 @@ pub struct MojiApp {
 impl Default for MojiApp {
     fn default() -> Self {
         Self {
-            search: String::from("Coming soon!"),
+            search: String::from(""),
             selected: String::from(" "),
             cb: ClipboardProvider::new().unwrap(),
         }
@@ -91,7 +95,9 @@ impl epi::App for MojiApp {
         egui::SidePanel::left("side_panel").show(ctx, |ui| {
             ui.add_space(5.0);
             ui.heading("Search 🔍");
-            let _search_bar = ui.text_edit_singleline(search); // remove underscore when ready
+            ui.text_edit_singleline(search);
+            //let node = TREE.find(search.as_str());
+            //println!("{:?}", node)
         });
 
         // The central panel is the region left after adding TopPanel's and SidePanel's.
@@ -105,7 +111,7 @@ impl epi::App for MojiApp {
 
             egui::ScrollArea::vertical().show(ui, |ui| {
                 ui.horizontal_wrapped(|ui| {
-                    for emoji in EMOS.iter() {
+                    for emoji in EMOJIS.iter() {
                         if ui.button(&emoji.ch).on_hover_text(&emoji.name).clicked() {
                             cb.set_contents(emoji.ch.clone()).unwrap();
                             *selected = emoji.ch.clone();
