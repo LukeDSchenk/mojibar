@@ -1,28 +1,40 @@
-# Mojibar (still very early development)
+# Mojibar 🙂👭🏂🐳🐆🦎©🈲🆖😯 (first beta release 🌞🥴🌝)
 
-A quick access tab and search bar for emojis. Simply click the emoji you want to use and it will be copied to your clipboard!
+A quick access tab and search bar for emojis. Simply click the emoji you want to use and it will be copied to your clipboard.
 
-## Coming Soon
+## Installation Instructions 📄
 
-* Search bar
+#### Linux 🐧
+
+Give me a moment to figure out how I want to do this 🥴.
+
+#### Mac 🍎
+
+For now, Mac users (or any unix-like OS user for that matter) can follow the same instructions as Linux ⬆.
+
+#### Windows 🪟
+
+If you're a chach and you use windows you need to be patient 🥴.
+
+## Coming Soon 🕦
+
+* Some docs for windows
 * UI improvements
-* Many more supported emojis
-* Hover for emoji descriptions
+* Search improvements
+* Select emoji with keyboard
+* Keyboard shortcuts
+* More supported emojis
+* Improvements to make it more speedy to use
 
-## Down the line
+## Future 📡🚀🤖
 
 Features I want but am not prioritizing right now.
 
-* Custom fonts
 * Favorite emojis
-
-# To Do
-
-* Make it so the default window size is somewhat large, but once you set up a favorites tab you can default it to opening small and only showing favorites, or favorites and search, etc.
-* Make some random emojis pop up in the window title on each run
-* Perhaps ask the egui creator about the monochrome emojis and custom fonts thing
-
-#### useful links
-
-* [egui demo](https://emilk.github.io/egui/#demo)
-* [demo source code](https://docs.rs/epi/0.16.0/src/epi/lib.rs.html#226-239)
+* Emoji categories
+* Custom fonts?
+* Single pane UI? (search bar simply filters results in a single main pane)
+* Basically a cooler copy of the emoji functionality of slack or IOS, etc. but it works on any platform and isn't tied to a single app
+* Run this program as a daemon of sorts that is bound to a keyboard shortcut so it can be accessed and closed extremely quickly
+* Emojipedia integration! For learning 📒
+* Some kind of API for integrating into other apps so each app doesn't have to make their own damn emoji toolbar???!
