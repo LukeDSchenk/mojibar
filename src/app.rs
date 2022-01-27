@@ -13,6 +13,7 @@ lazy_static! {
 fn create_radix_tree() -> Node<char, &'static Emoji> {
     let mut tree = Node::<char, &Emoji>::new("", None);
     for emoji in EMOJIS.iter() {
+        tree.insert(emoji.name.as_str(), &emoji);
         for word in emoji.keywords.iter() {
             tree.insert(word.as_str(), &emoji);
         }
@@ -23,23 +24,25 @@ fn create_radix_tree() -> Node<char, &'static Emoji> {
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 #[cfg_attr(feature = "persistence", derive(serde::Deserialize, serde::Serialize))]
 #[cfg_attr(feature = "persistence", serde(default))] // if we add new fields, give them default values when deserializing old state
-pub struct MojiApp {
+pub struct MojiApp<'a> {
     search: String,
+    results: Vec<&'a Emoji>, // stores emoji refs matched in the search
     selected: String,
     cb: ClipboardContext,
 }
 
-impl Default for MojiApp {
+impl Default for MojiApp<'_> {
     fn default() -> Self {
         Self {
             search: String::from(""),
+            results: Vec::new(),
             selected: String::from(" "),
             cb: ClipboardProvider::new().unwrap(),
         }
     }
 }
 
-impl epi::App for MojiApp {
+impl epi::App for MojiApp<'_> {
     fn name(&self) -> &str {
         "Mojibar 🥴"
     }
@@ -74,7 +77,7 @@ impl epi::App for MojiApp {
             (egui::FontFamily::Proportional, 30.0)
         );
 
-        // Try and set up custom fonts here. Not currently working.
+        // Set up custom fonts here. All emojis in egui are black/white by default, need to look into why.
         fonts.font_data.insert("OpenMoji".to_owned(), std::borrow::Cow::Borrowed(include_bytes!("../fonts/OpenMoji-Color.ttf")));
         fonts.fonts_for_family.get_mut(&egui::FontFamily::Proportional).unwrap().insert(0, "OpenMoji".to_owned());
         _ctx.set_fonts(fonts);
@@ -90,14 +93,48 @@ impl epi::App for MojiApp {
     /// Called each time the UI needs repainting, which may be many times per second.
     /// Put your wilet search_bar = ui.text_edit_singleline(&mut "".to_string());dgets into a `SidePanel`, `TopPanel`, `CentralPanel`, `Window` or `Area`.
     fn update(&mut self, ctx: &egui::CtxRef, _frame: &mut epi::Frame<'_>) {
-        let Self { search, selected, cb } = self;
+        let Self { search, results, selected, cb } = self;
 
         egui::SidePanel::left("side_panel").show(ctx, |ui| {
             ui.add_space(5.0);
             ui.heading("Search 🔍");
-            ui.text_edit_singleline(search);
-            //let node = TREE.find(search.as_str());
-            //println!("{:?}", node)
+
+            if ui.text_edit_singleline(search).changed() {
+                results.clear();
+                if search != "" {
+                    match TREE.find(search.clone()) {
+                        Some(node) => {
+                            match node.data {
+                                Some(emoji) => {
+                                    results.push(emoji);
+                                },
+                                None => (),
+                            };
+                            for n in node.nodes.iter() {
+                                match n.data {
+                                    Some(emoji) => {
+                                        results.push(emoji);
+                                    },
+                                    None => (),
+                                };
+                            }
+                        },
+                        None => (),
+                    };
+                }
+            }
+
+            egui::ScrollArea::vertical().show(ui, |ui| {
+                ui.horizontal_wrapped(|ui| {
+                    for emoji in results.iter() {
+                        if ui.button(&emoji.ch).on_hover_text(&emoji.name).clicked() {
+                            cb.set_contents(emoji.ch.clone()).unwrap();
+                            *selected = emoji.ch.clone();
+                            println!("{}", emoji.ch);
+                        }
+                    }
+                });
+            });
         });
 
         // The central panel is the region left after adding TopPanel's and SidePanel's.
