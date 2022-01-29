@@ -5,6 +5,9 @@ use radix_tree::{Node, Radix};
 
 use crate::emoji::{self, Emoji};
 
+// Static references to data structures containing the emoji data.
+// EMOJIS is a vector of Emoji structs. This is where the actual data for each emoji resides.
+// TREE is a radix tree containing references to Emoji structs inside EMOJIS (used for searching).
 lazy_static! {
     static ref EMOJIS: Vec<Emoji> = emoji::load_emoji_data("./emojis/emoji-min.json"); // this should actually return a result possibly
     static ref TREE: Node<char, &'static Emoji> = create_radix_tree();
@@ -21,7 +24,7 @@ fn create_radix_tree() -> Node<char, &'static Emoji> {
     tree
 }
 
-/// We derive Deserialize/Serialize so we can persist app state on shutdown.
+/// Deriving Deserialize/Serialize allows persisting app state on shutdown.
 #[cfg_attr(feature = "persistence", derive(serde::Deserialize, serde::Serialize))]
 #[cfg_attr(feature = "persistence", serde(default))] // if we add new fields, give them default values when deserializing old state
 pub struct MojiApp<'a> {
@@ -61,8 +64,7 @@ impl epi::App for MojiApp<'_> {
             *self = epi::get_value(storage, epi::APP_KEY).unwrap_or_default()
         }
 
-        // Set up custom font to support Unicode Chars.
-        // THIS CODE DOESN'T FUCKING WORK.
+        // Set up custom fonts.
         let mut fonts = egui::FontDefinitions::default();
         fonts.family_and_size.insert(
             egui::TextStyle::Button,
@@ -91,10 +93,10 @@ impl epi::App for MojiApp<'_> {
     }
 
     /// Called each time the UI needs repainting, which may be many times per second.
-    /// Put your wilet search_bar = ui.text_edit_singleline(&mut "".to_string());dgets into a `SidePanel`, `TopPanel`, `CentralPanel`, `Window` or `Area`.
     fn update(&mut self, ctx: &egui::CtxRef, _frame: &mut epi::Frame<'_>) {
         let Self { search, results, selected, cb } = self;
 
+        // Side panel with search bar.
         egui::SidePanel::left("side_panel").show(ctx, |ui| {
             ui.add_space(5.0);
             ui.heading("Search 🔍");
@@ -124,6 +126,7 @@ impl epi::App for MojiApp<'_> {
                 }
             }
 
+            // The emoji area for the search bar.
             egui::ScrollArea::vertical().show(ui, |ui| {
                 ui.horizontal_wrapped(|ui| {
                     for emoji in results.iter() {
@@ -146,13 +149,16 @@ impl epi::App for MojiApp<'_> {
             });
             ui.add_space(15.0);
 
+            // The main emoji scroll area.
             egui::ScrollArea::vertical().show(ui, |ui| {
                 ui.horizontal_wrapped(|ui| {
                     for emoji in EMOJIS.iter() {
                         if ui.button(&emoji.ch).on_hover_text(&emoji.name).clicked() {
                             cb.set_contents(emoji.ch.clone()).unwrap();
                             *selected = emoji.ch.clone();
-                            println!("{}", emoji.ch);
+                            if cfg!(debug_assertions) {
+                                println!("{}", emoji.ch); // only prints on debug builds
+                            }
                         }
                     }
                 });
