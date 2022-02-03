@@ -4,6 +4,9 @@
 
 mod app;
 mod emoji;
+
+use std::panic;
+use console_error_panic_hook;
 pub use app::MojiApp;
 
 // ----------------------------------------------------------------------------
@@ -19,6 +22,9 @@ use eframe::wasm_bindgen::{self, prelude::*};
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
 pub fn start(canvas_id: &str) -> Result<(), eframe::wasm_bindgen::JsValue> {
-    let app = TemplateApp::default();
+    panic::set_hook(Box::new(console_error_panic_hook::hook)); // figure out why this isn't working
+    let app = MojiApp::default();
     eframe::start_web(canvas_id, Box::new(app))
 }
+// panicked at 'Could not read emoji.json file to string: Error { kind: Unsupported, message: "operation not supported on this platform" }', src/emoji.rs:19:42
+// need to turn emoji-min.json into rust code ^

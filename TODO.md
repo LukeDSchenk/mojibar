@@ -17,3 +17,13 @@
   * search could work on only the open tab?? or maybe that's confusing
   * maybe just a frequently used or recent emojis is better
   * just copy slack? 😂😂😂😂😂😂😂😂😂
+
+## WASM issues
+
+* Figure out how to make the copy to clipboard work in the browser
+
+## Administrative issues
+
+* Clean up code
+* Clean up repo
+* Clean up documenatation

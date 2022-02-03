@@ -9,7 +9,7 @@ use crate::emoji::{self, Emoji};
 // EMOJIS is a vector of Emoji structs. This is where the actual data for each emoji resides.
 // TREE is a radix tree containing references to Emoji structs inside EMOJIS (used for searching).
 lazy_static! {
-    static ref EMOJIS: Vec<Emoji> = emoji::load_emoji_data("./emojis/emoji-min.json"); // this should actually return a result possibly
+    static ref EMOJIS: Vec<Emoji> = emoji::load_emoji_data().expect("Could not load emoji data");
     static ref TREE: Node<char, &'static Emoji> = create_radix_tree();
 }
 
