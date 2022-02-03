@@ -15,8 +15,9 @@ console_error_panic_hook = "0.1.7"
 eframe = "0.15.0" # Gives us egui, epi and web+native backends
 lazy_static = "1.4.0"
 radix-tree = "0.1.0"
-serde = { version = "1.0", features = ["derive"], optional = false}
+serde = { version = "1.0", features = ["derive"], optional = false }
 serde_json = "1.0"
+web-sys = { version = "0.3.56", features = ["Clipboard"] }
 
 [features]
 default = []
