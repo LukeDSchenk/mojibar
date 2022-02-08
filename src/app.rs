@@ -11,7 +11,7 @@ use {
 
 #[cfg(target_arch = "wasm32")]
 use {
-    wasm_bindgen_futures::JsFuture,
+    wasm_bindgen_futures::JsFuture, // https://rustwasm.github.io/docs/wasm-bindgen/reference/js-promises-and-rust-futures.html
     web_sys::{self, Clipboard},
 };
 
