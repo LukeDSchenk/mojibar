@@ -1,9 +1,19 @@
-use clipboard::{ClipboardContext, ClipboardProvider};
 use eframe::{egui, epi};
 use lazy_static::lazy_static;
 use radix_tree::{Node, Radix};
 
 use crate::emoji::{self, Emoji};
+
+#[cfg(not(target_arch = "wasm32"))]
+use {
+    clipboard::{ClipboardContext, ClipboardProvider},
+};
+
+#[cfg(target_arch = "wasm32")]
+use {
+    wasm_bindgen_futures::JsFuture,
+    web_sys::{self, Clipboard},
+};
 
 // Static references to data structures containing the emoji data.
 // EMOJIS is a vector of Emoji structs. This is where the actual data for each emoji resides.
@@ -27,6 +37,7 @@ fn create_radix_tree() -> Node<char, &'static Emoji> {
 /// Deriving Deserialize/Serialize allows persisting app state on shutdown.
 #[cfg_attr(feature = "persistence", derive(serde::Deserialize, serde::Serialize))]
 #[cfg_attr(feature = "persistence", serde(default))] // if we add new fields, give them default values when deserializing old state
+#[cfg(not(target_arch = "wasm32"))]
 pub struct MojiApp<'a> {
     search: String,
     results: Vec<&'a Emoji>, // stores emoji refs matched in the search
@@ -34,6 +45,15 @@ pub struct MojiApp<'a> {
     cb: ClipboardContext,
 }
 
+#[cfg(target_arch = "wasm32")]
+pub struct MojiApp<'a> {
+    search: String,
+    results: Vec<&'a Emoji>, // stores emoji refs matched in the search
+    selected: String,
+    cb: Clipboard,
+}
+
+#[cfg(not(target_arch = "wasm32"))]
 impl Default for MojiApp<'_> {
     fn default() -> Self {
         Self {
@@ -41,6 +61,20 @@ impl Default for MojiApp<'_> {
             results: Vec::new(),
             selected: String::from(" "),
             cb: ClipboardProvider::new().unwrap(),
+        }
+    }
+}
+
+#[cfg(target_arch = "wasm32")]
+impl Default for MojiApp<'_> {
+    fn default() -> Self {
+        Self {
+            search: String::from(""),
+            results: Vec::new(),
+            selected: String::from(" "),
+            cb: web_sys::window().expect("could not get web-sys window object")
+                .navigator()
+                .clipboard().expect("could not get clipboard"),
         }
     }
 }
@@ -131,9 +165,21 @@ impl epi::App for MojiApp<'_> {
                 ui.horizontal_wrapped(|ui| {
                     for emoji in results.iter() {
                         if ui.button(&emoji.ch).on_hover_text(&emoji.name).clicked() {
-                            cb.set_contents(emoji.ch.clone()).unwrap();
-                            *selected = emoji.ch.clone();
-                            println!("{}", emoji.ch);
+                            #[cfg(not(target_arch = "wasm32"))] {
+                                cb.set_contents(emoji.ch.clone()).unwrap();
+                                *selected = emoji.ch.clone();
+                                if cfg!(debug_assertions) {
+                                    println!("{}", emoji.ch); // only prints on debug builds
+                                }
+                            }
+
+                            #[cfg(target_arch = "wasm32")] {
+                                let promise = JsFuture::from(cb.write_text(&emoji.ch));
+                                let _result =  async {
+                                    promise.await.expect("could not copy to clipboard");
+                                };
+                                *selected = emoji.ch.clone();
+                            }
                         }
                     }
                 });
@@ -154,10 +200,20 @@ impl epi::App for MojiApp<'_> {
                 ui.horizontal_wrapped(|ui| {
                     for emoji in EMOJIS.iter() {
                         if ui.button(&emoji.ch).on_hover_text(&emoji.name).clicked() {
-                            cb.set_contents(emoji.ch.clone()).unwrap();
-                            *selected = emoji.ch.clone();
-                            if cfg!(debug_assertions) {
-                                println!("{}", emoji.ch); // only prints on debug builds
+                            #[cfg(not(target_arch = "wasm32"))] {
+                                cb.set_contents(emoji.ch.clone()).unwrap();
+                                *selected = emoji.ch.clone();
+                                if cfg!(debug_assertions) {
+                                    println!("{}", emoji.ch); // only prints on debug builds
+                                }
+                            }
+
+                            #[cfg(target_arch = "wasm32")] {
+                                let promise = JsFuture::from(cb.write_text(&emoji.ch));
+                                let _result =  async {
+                                    promise.await.expect("could not copy to clipboard");
+                                };
+                                *selected = emoji.ch.clone();
                             }
                         }
                     }
