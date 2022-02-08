@@ -17,7 +17,8 @@ lazy_static = "1.4.0"
 radix-tree = "0.1.0"
 serde = { version = "1.0", features = ["derive"], optional = false }
 serde_json = "1.0"
-web-sys = { version = "0.3.56", features = ["Clipboard"] }
+wasm-bindgen-futures = "0.4.29"
+web-sys = { version = "0.3.56", features = ["Clipboard", "Navigator", "Window"] }
 
 [features]
 default = []

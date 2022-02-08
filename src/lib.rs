@@ -5,15 +5,17 @@
 mod app;
 mod emoji;
 
-use std::panic;
-use console_error_panic_hook;
 pub use app::MojiApp;
 
 // ----------------------------------------------------------------------------
 // When compiling for web:
 
 #[cfg(target_arch = "wasm32")]
-use eframe::wasm_bindgen::{self, prelude::*};
+use {
+    eframe::wasm_bindgen::{self, prelude::*},
+    console_error_panic_hook,
+    std::panic,
+};
 
 /// This is the entry-point for all the web-assembly.
 /// This is called once from the HTML.
