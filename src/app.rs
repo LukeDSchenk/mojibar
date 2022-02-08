@@ -74,7 +74,7 @@ impl Default for MojiApp<'_> {
             selected: String::from(" "),
             cb: web_sys::window().expect("could not get web-sys window object")
                 .navigator()
-                .clipboard().expect("could not get clipboard"),
+                .clipboard().expect("could not get clipboard"), // replace expects with JS alert in browser
         }
     }
 }
