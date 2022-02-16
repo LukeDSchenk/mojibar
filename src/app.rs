@@ -1,6 +1,6 @@
 use eframe::{egui, epi};
 use lazy_static::lazy_static;
-use radix_tree::{Node, Radix};
+use radix_trie::Trie;
 
 use crate::emoji::{self, Emoji};
 
@@ -20,11 +20,16 @@ use {
 // TREE is a radix tree containing references to Emoji structs inside EMOJIS (used for searching).
 lazy_static! {
     static ref EMOJIS: Vec<Emoji> = emoji::load_emoji_data().expect("Could not load emoji data");
-    static ref TREE: Node<char, &'static Emoji> = create_radix_tree();
+    static ref TREE: Trie<char, &'static Emoji> = create_radix_trie();
 }
 
-fn create_radix_tree() -> Node<char, &'static Emoji> {
-    let mut tree = Node::<char, &Emoji>::new("", None);
+/// CREATE A RADIX_TRIE WHERE THE DATA IS A VECTOR OF STATIC EMOJI REFS.
+/// FIRST, CHECK IF A GIVEN KEY EXISTS IN THE TRIE.
+/// IF IT ALREADY EXISTS, THEN SIMPLY APPEND THE NEXT EMOJI TO THE VECTOR FOR THAT KEY.
+/// PROBLEM SOLVED!!!!!!
+/// OH SHIIIIIIIII
+fn create_radix_trie() -> Trie<char, &'static Emoji> {
+    let mut tree = Trie::<char, &Emoji>::new();
     for emoji in EMOJIS.iter() {
         tree.insert(emoji.name.as_str(), &emoji);
         for word in emoji.keywords.iter() {
@@ -138,21 +143,10 @@ impl epi::App for MojiApp<'_> {
             if ui.text_edit_singleline(search).changed() {
                 results.clear();
                 if search != "" {
-                    match TREE.find(search.clone()) {
-                        Some(node) => {
-                            match node.data {
-                                Some(emoji) => {
-                                    results.push(emoji);
-                                },
-                                None => (),
-                            };
-                            for n in node.nodes.iter() {
-                                match n.data {
-                                    Some(emoji) => {
-                                        results.push(emoji);
-                                    },
-                                    None => (),
-                                };
+                    match TREE.subtrie(search.clone()) {
+                        Some(st) => {
+                            for v in st.values() { // iterate over all values of the subtrie
+                                results.push(v);
                             }
                         },
                         None => (),
