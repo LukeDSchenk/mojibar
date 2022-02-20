@@ -1,6 +1,6 @@
 use eframe::{egui, epi};
 use lazy_static::lazy_static;
-use radix_trie::Trie;
+use radix_trie::{Trie, TrieCommon};
 
 use crate::emoji::{self, Emoji};
 
@@ -20,7 +20,7 @@ use {
 // TREE is a radix tree containing references to Emoji structs inside EMOJIS (used for searching).
 lazy_static! {
     static ref EMOJIS: Vec<Emoji> = emoji::load_emoji_data().expect("Could not load emoji data");
-    static ref TREE: Trie<char, &'static Emoji> = create_radix_trie();
+    static ref TREE: Trie<&'static [u8], &'static Emoji> = create_radix_trie();
 }
 
 /// CREATE A RADIX_TRIE WHERE THE DATA IS A VECTOR OF STATIC EMOJI REFS.
@@ -28,12 +28,12 @@ lazy_static! {
 /// IF IT ALREADY EXISTS, THEN SIMPLY APPEND THE NEXT EMOJI TO THE VECTOR FOR THAT KEY.
 /// PROBLEM SOLVED!!!!!!
 /// OH SHIIIIIIIII
-fn create_radix_trie() -> Trie<char, &'static Emoji> {
-    let mut tree = Trie::<char, &Emoji>::new();
+fn create_radix_trie() -> Trie<&'static [u8], &'static Emoji> {
+    let mut tree = Trie::new();
     for emoji in EMOJIS.iter() {
-        tree.insert(emoji.name.as_str(), &emoji);
+        tree.insert(emoji.name.as_bytes(), emoji);
         for word in emoji.keywords.iter() {
-            tree.insert(word.as_str(), &emoji);
+            tree.insert(word.as_bytes(), emoji);
         }
     }
     tree
@@ -143,7 +143,7 @@ impl epi::App for MojiApp<'_> {
             if ui.text_edit_singleline(search).changed() {
                 results.clear();
                 if search != "" {
-                    match TREE.subtrie(search.clone()) {
+                    match TREE.subtrie(&search.as_bytes()) {
                         Some(st) => {
                             for v in st.values() { // iterate over all values of the subtrie
                                 results.push(v);
