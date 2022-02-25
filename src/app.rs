@@ -20,7 +20,7 @@ use {
 // TREE is a radix tree containing references to Emoji structs inside EMOJIS (used for searching).
 lazy_static! {
     static ref EMOJIS: Vec<Emoji> = emoji::load_emoji_data().expect("Could not load emoji data");
-    static ref TREE: Trie<&'static [u8], &'static Emoji> = create_radix_trie();
+    static ref TREE: Trie<&'static [u8], Vec<&'static Emoji>> = create_radix_trie();
 }
 
 /// CREATE A RADIX_TRIE WHERE THE DATA IS A VECTOR OF STATIC EMOJI REFS.
@@ -28,12 +28,24 @@ lazy_static! {
 /// IF IT ALREADY EXISTS, THEN SIMPLY APPEND THE NEXT EMOJI TO THE VECTOR FOR THAT KEY.
 /// PROBLEM SOLVED!!!!!!
 /// OH SHIIIIIIIII
-fn create_radix_trie() -> Trie<&'static [u8], &'static Emoji> {
-    let mut tree = Trie::new();
+fn create_radix_trie() -> Trie<&'static [u8], Vec<&'static Emoji>> {
+    let mut tree: Trie<&[u8], Vec<&Emoji>> = Trie::new();
     for emoji in EMOJIS.iter() {
-        tree.insert(emoji.name.as_bytes(), emoji);
+        match tree.get_mut(emoji.name.as_bytes()) {
+            Some(vector) => vector.push(emoji),
+            None => {
+                tree.insert(emoji.name.as_bytes(), vec![emoji]);
+                ()
+            },
+        };
         for word in emoji.keywords.iter() {
-            tree.insert(word.as_bytes(), emoji);
+            match tree.get_mut(word.as_bytes()) {
+                Some(vector) => vector.push(emoji),
+                None => {
+                    tree.insert(word.as_bytes(), vec![emoji]);
+                    ()
+                },
+            };
         }
     }
     tree
@@ -145,8 +157,10 @@ impl epi::App for MojiApp<'_> {
                 if search != "" {
                     match TREE.subtrie(&search.as_bytes()) {
                         Some(st) => {
-                            for v in st.values() { // iterate over all values of the subtrie
-                                results.push(v);
+                            for vector in st.values() { // iterate over all values of the subtrie
+                                for item in vector.iter() {
+                                    results.push(item);
+                                }
                             }
                         },
                         None => (),
