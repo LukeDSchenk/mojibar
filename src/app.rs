@@ -23,11 +23,8 @@ lazy_static! {
     static ref TREE: Trie<&'static [u8], Vec<&'static Emoji>> = create_radix_trie();
 }
 
-/// CREATE A RADIX_TRIE WHERE THE DATA IS A VECTOR OF STATIC EMOJI REFS.
-/// FIRST, CHECK IF A GIVEN KEY EXISTS IN THE TRIE.
-/// IF IT ALREADY EXISTS, THEN SIMPLY APPEND THE NEXT EMOJI TO THE VECTOR FOR THAT KEY.
-/// PROBLEM SOLVED!!!!!!
-/// OH SHIIIIIIIII
+/// Creates a static radix trie where the keys are arrays of chars (u8) and the optional values
+/// are vectors of emoji references.
 fn create_radix_trie() -> Trie<&'static [u8], Vec<&'static Emoji>> {
     let mut tree: Trie<&[u8], Vec<&Emoji>> = Trie::new();
     for emoji in EMOJIS.iter() {
