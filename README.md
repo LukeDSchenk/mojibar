@@ -1,6 +1,6 @@
 # Mojibar 🙂👭🏂🐳🐆🦎©🈲🆖😯 (first beta release 🌞🥴🌝)
 
-A quick access tab and search bar for emojis. Simply click the emoji you want to use and it will be copied to your clipboard.
+A quick access tab and search bar for emojis. Simply click the emoji you want to use and it will be copied to your clipboard. Want to try it out before you decide if you like it? Click here to [try out Mojibar in your browser](https://lukedschenk.github.io/Mojibar/).
 
 ## Installation Instructions 📄
 
@@ -33,7 +33,6 @@ Features I want but am not prioritizing right now.
 * Favorite emojis
 * Emoji categories
 * Custom fonts?
-* Single pane UI? (search bar simply filters results in a single main pane)
 * Basically a cooler copy of the emoji functionality of slack or IOS, etc. but it works on any platform and isn't tied to a single app
 * Run this program as a daemon of sorts that is bound to a keyboard shortcut so it can be accessed and closed extremely quickly
 * Emojipedia integration! For learning 📒
