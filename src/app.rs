@@ -55,7 +55,6 @@ fn create_radix_trie() -> Trie<&'static [u8], Vec<&'static Emoji>> {
 pub struct MojiApp<'a> {
     search: String,
     results: Vec<&'a Emoji>, // stores emoji refs matched in the search
-    selected: String,
     cb: ClipboardContext,
 }
 
@@ -63,7 +62,6 @@ pub struct MojiApp<'a> {
 pub struct MojiApp<'a> {
     search: String,
     results: Vec<&'a Emoji>, // stores emoji refs matched in the search
-    selected: String,
     cb: Clipboard,
 }
 
@@ -73,7 +71,6 @@ impl Default for MojiApp<'_> {
         Self {
             search: String::from(""),
             results: Vec::new(),
-            selected: String::from(" "),
             cb: ClipboardProvider::new().unwrap(),
         }
     }
@@ -85,7 +82,6 @@ impl Default for MojiApp<'_> {
         Self {
             search: String::from(""),
             results: Vec::new(),
-            selected: String::from(" "),
             cb: web_sys::window().expect("could not get web-sys window object")
                 .navigator()
                 .clipboard().expect("could not get clipboard"), // replace expects with JS alert in browser
@@ -116,7 +112,7 @@ impl epi::App for MojiApp<'_> {
         let mut fonts = egui::FontDefinitions::default();
         fonts.family_and_size.insert(
             egui::TextStyle::Button,
-            (egui::FontFamily::Proportional, 36.0)
+            (egui::FontFamily::Monospace, 36.0)
         );
         fonts.family_and_size.insert(
             egui::TextStyle::Body,
@@ -124,12 +120,12 @@ impl epi::App for MojiApp<'_> {
         );
         fonts.family_and_size.insert(
             egui::TextStyle::Heading,
-            (egui::FontFamily::Proportional, 30.0)
+            (egui::FontFamily::Proportional, 26.0)
         );
 
         // Set up custom fonts here. All emojis in egui are black/white by default, need to look into why.
         fonts.font_data.insert("OpenMoji".to_owned(), std::borrow::Cow::Borrowed(include_bytes!("../fonts/OpenMoji-Color.ttf")));
-        fonts.fonts_for_family.get_mut(&egui::FontFamily::Proportional).unwrap().insert(0, "OpenMoji".to_owned());
+        fonts.fonts_for_family.get_mut(&egui::FontFamily::Monospace).unwrap().insert(0, "OpenMoji".to_owned());
         _ctx.set_fonts(fonts);
     }
 
@@ -142,60 +138,15 @@ impl epi::App for MojiApp<'_> {
 
     /// Called each time the UI needs repainting, which may be many times per second.
     fn update(&mut self, ctx: &egui::CtxRef, _frame: &mut epi::Frame<'_>) {
-        let Self { search, results, selected, cb } = self;
-
-        // Side panel with search bar.
-        egui::SidePanel::left("side_panel").show(ctx, |ui| {
-            ui.add_space(5.0);
-            ui.heading("Search 🔍");
-
-            if ui.text_edit_singleline(search).changed() {
-                results.clear();
-                if search != "" {
-                    match TREE.subtrie(&search.as_bytes()) {
-                        Some(st) => {
-                            for vector in st.values() { // iterate over all values of the subtrie
-                                for item in vector.iter() {
-                                    results.push(item);
-                                }
-                            }
-                        },
-                        None => (),
-                    };
-                }
-            }
-
-            // The emoji area for the search bar.
-            egui::ScrollArea::vertical().show(ui, |ui| {
-                ui.horizontal_wrapped(|ui| {
-                    for emoji in results.iter() {
-                        if ui.button(&emoji.ch).on_hover_text(&emoji.name).clicked() {
-                            #[cfg(not(target_arch = "wasm32"))] {
-                                cb.set_contents(emoji.ch.clone()).unwrap();
-                                *selected = emoji.ch.clone();
-                                if cfg!(debug_assertions) {
-                                    println!("{}", emoji.ch); // only prints on debug builds
-                                }
-                            }
-
-                            #[cfg(target_arch = "wasm32")] {
-                                let promise = JsFuture::from(cb.write_text(&emoji.ch));
-                                let _result =  async {
-                                    promise.await.expect("could not copy to clipboard");
-                                };
-                                *selected = emoji.ch.clone();
-                            }
-                        }
-                    }
-                });
-            });
-        });
+        let Self { search, results, cb } = self;
+        let mut search_change = false; // variable representing changes to the search bar
 
         // The central panel is the region left after adding TopPanel's and SidePanel's.
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.horizontal(|ui| {
-                ui.heading("Selected: ");
-                ui.heading(&selected);
+                ui.heading("Search 🔍");
+                search_change = ui.text_edit_singleline(search).changed();
+                ui.add_space(25.0);
                 egui::warn_if_debug_build(ui);
             });
             ui.add_space(15.0);
@@ -203,22 +154,54 @@ impl epi::App for MojiApp<'_> {
             // The main emoji scroll area.
             egui::ScrollArea::vertical().show(ui, |ui| {
                 ui.horizontal_wrapped(|ui| {
-                    for emoji in EMOJIS.iter() {
-                        if ui.button(&emoji.ch).on_hover_text(&emoji.name).clicked() {
-                            #[cfg(not(target_arch = "wasm32"))] {
-                                cb.set_contents(emoji.ch.clone()).unwrap();
-                                *selected = emoji.ch.clone();
-                                if cfg!(debug_assertions) {
-                                    println!("{}", emoji.ch); // only prints on debug builds
+                    if search == "" {
+                        for emoji in EMOJIS.iter() {
+                            if ui.button(&emoji.ch).on_hover_text(&emoji.name).clicked() {
+                                #[cfg(not(target_arch = "wasm32"))] {
+                                    cb.set_contents(emoji.ch.clone()).unwrap();
+                                    if cfg!(debug_assertions) {
+                                        println!("{}", emoji.ch); // only prints on debug builds
+                                    }
+                                }
+
+                                #[cfg(target_arch = "wasm32")] {
+                                    let promise = JsFuture::from(cb.write_text(&emoji.ch));
+                                    let _result =  async {
+                                        promise.await.expect("could not copy to clipboard");
+                                    };
                                 }
                             }
+                        }
+                    } else {
+                        if search_change {
+                            results.clear();
+                            match TREE.subtrie(&search.as_bytes()) {
+                                Some(st) => {
+                                    for vector in st.values() { // iterate over all values of the subtrie
+                                        for item in vector.iter() {
+                                            results.push(item);
+                                        }
+                                    }
+                                },
+                                None => (),
+                            };
+                        }
 
-                            #[cfg(target_arch = "wasm32")] {
-                                let promise = JsFuture::from(cb.write_text(&emoji.ch));
-                                let _result =  async {
-                                    promise.await.expect("could not copy to clipboard");
-                                };
-                                *selected = emoji.ch.clone();
+                        for emoji in results.iter() {
+                            if ui.button(&emoji.ch).on_hover_text(&emoji.name).clicked() {
+                                #[cfg(not(target_arch = "wasm32"))] {
+                                    cb.set_contents(emoji.ch.clone()).unwrap();
+                                    if cfg!(debug_assertions) {
+                                        println!("{}", emoji.ch); // only prints on debug builds
+                                    }
+                                }
+
+                                #[cfg(target_arch = "wasm32")] {
+                                    let promise = JsFuture::from(cb.write_text(&emoji.ch));
+                                    let _result =  async {
+                                        promise.await.expect("could not copy to clipboard");
+                                    };
+                                }
                             }
                         }
                     }
