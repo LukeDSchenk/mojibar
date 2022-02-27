@@ -1,6 +1,6 @@
 # Mojibar 🙂👭🏂🐳🐆🦎©🈲🆖😯 (first beta release 🌞🥴🌝)
 
-A quick access tab and search bar for emojis. Simply click the emoji you want to use and it will be copied to your clipboard. Want to try it out before you decide if you like it? Click here to [try out Mojibar in your browser](https://lukedschenk.github.io/Mojibar/).
+A quick access tab and search bar for emojis. Simply click the emoji you want to use and it will be copied to your clipboard. Want to try it out before you decide if you like it? Click here to [try out Mojibar in your browser](https://lukedschenk.github.io/Mojibar/) (note that the desktop version will offer more than the basic click-to-copy functionality).
 
 ## Installation Instructions 📄
 
@@ -15,6 +15,11 @@ For now, Mac users (or any unix-like OS user for that matter) can follow the sam
 #### Windows 🪟
 
 If you're a chach and you use windows you need to be patient 🥴.
+
+## Known Issues
+
+* Emojis are all monochrome! (I know it sucks! I didn't realize when I started but the UI framework I used makes all emojis monochrome. I thought this problem would be fixed by using a custom font but it was not ☹. I will do whatever it takes to remedy this, I just hope it doesn't end up forcing me to switch UI frameworks.)
+* The search bar has some weird issues where certain substrings will match on emojis where other more "complete" substrings of a word will not. Actively looking into solutions for this.
 
 ## Coming Soon 🕦
 
