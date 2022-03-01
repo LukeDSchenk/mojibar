@@ -8,7 +8,7 @@ A quick access tab and search bar for emojis. Simply click the emoji you want to
 
 Simply run this command in your unix terminal and badabing badaboom, Mojibar will be installed!
 
-*I haven't actually figured out the command yet 🚌🆙🚌🆙
+*I haven't actually figured out the command yet* 🚌🆙🚌🆙
 
 ## Linux 🐧
 
