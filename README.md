@@ -1,4 +1,4 @@
-# Mojibar 🙂👭🏂🐳🐆🦎©🈲🆖😯 (first beta release 🌞🥴🌝)
+# 🙂👭🏂🐳 Mojibar 🐆🦎©🈲🆖😯
 
 A quick access tab and search bar for emojis. Simply click the emoji you want to use and it will be copied to your clipboard. Want to try it out before you decide if you like it? Click here to [try out Mojibar in your browser](https://lukedschenk.github.io/Mojibar/) (note that the desktop version will offer more than the basic click-to-copy functionality).
 
@@ -16,20 +16,31 @@ For now, Mac users (or any unix-like OS user for that matter) can follow the sam
 
 If you're a chach and you use windows you need to be patient 🥴.
 
+## Compiling from source
+
+If you are familiar at all with Rust projects, then you probably don't need me explaining this to you. But for those who are not, the process is something like this:
+
+1. Make sure you [install Rust](https://www.rust-lang.org/tools/install) on your machine.
+2. Clone the repo: `git clone https://github.com/LukeDSchenk/mojibar.git`.
+3. Enter the cloned repo dir: `cd ./mojibar`.
+4. Build the project: `cargo build --release`.
+
+After following these steps, you will find the compiled binary at `mojibar/target/release/mojibar`. The application and all of its dependencies are packed in this one binary, so you may copy it anywhere on your machine you please.
+
 ## Known Issues
 
 * Emojis are all monochrome! (I know it sucks! I didn't realize when I started but the UI framework I used makes all emojis monochrome. I thought this problem would be fixed by using a custom font but it was not ☹. I will do whatever it takes to remedy this, I just hope it doesn't end up forcing me to switch UI frameworks.)
-* The search bar has some weird issues where certain substrings will match on emojis where other more "complete" substrings of a word will not. Actively looking into solutions for this.
+* The search bar has some weird issues where certain substrings will match on emojis where other more "complete" substrings of a word will not. Actively looking into the cause of this.
+* Pasting emojis into the search bar uses a different font and it's weird.
 
 ## Coming Soon 🕦
 
-* Some docs for windows
+* Better documenatation
 * UI improvements
 * Search improvements
-* Select emoji with keyboard
-* Keyboard shortcuts
+* Select emoji with arrow keys (currently only works with tabbing or clicking)
+* Keyboard shortcuts and other speed of use improvements
 * More supported emojis
-* Improvements to make it more speedy to use
 
 ## Future 📡🚀🤖
 

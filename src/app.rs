@@ -175,7 +175,7 @@ impl epi::App for MojiApp<'_> {
                     } else {
                         if search_change {
                             results.clear();
-                            match TREE.subtrie(&search.as_bytes()) {
+                            match TREE.subtrie(&search.to_lowercase().as_bytes()) {
                                 Some(st) => {
                                     for vector in st.values() { // iterate over all values of the subtrie
                                         for item in vector.iter() {
