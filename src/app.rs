@@ -144,7 +144,7 @@ impl epi::App for MojiApp<'_> {
         // The central panel is the region left after adding TopPanel's and SidePanel's.
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.horizontal(|ui| {
-                ui.heading("Search 🔍");
+                ui.heading("🔍");
                 search_change = ui.text_edit_singleline(search).changed();
                 ui.add_space(25.0);
                 egui::warn_if_debug_build(ui);
