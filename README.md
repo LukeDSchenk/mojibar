@@ -1,6 +1,6 @@
 # 🙂👭🏂🐳 ~~Mojibar~~ 🐆🦎©🈲🆖😯
 
-**NOOOOOOO, I HAVE JUST DISCOVERED THAT THE NAME [MOJIBAR](https://github.com/muan/mojibar) IS ALREADY TAKEN 😢 
+**NOOOOOOO, I HAVE JUST DISCOVERED THAT THE NAME [MOJIBAR](https://github.com/muan/mojibar) IS ALREADY TAKEN 😢 **
 
 A quick access tab and search bar for emojis. Simply click the emoji you want to use and it will be copied to your clipboard. Want to try it out before you decide if you like it? Click here to [try out Mojibar in your browser](https://lukedschenk.github.io/mojibar/) (note that the desktop version will offer more than the basic click-to-copy functionality).
 
