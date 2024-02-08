@@ -6,6 +6,14 @@ A quick access tab and search bar for emojis. Simply click the emoji you want to
 
 # Installation Instructions 📄
 
+## Requirements
+
+This project is built using [egui](https://github.com/emilk/egui), which means you need to install these packages before compiling on Linux:
+
+```bash
+sudo apt-get install -y libclang-dev libgtk-3-dev libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev libxkbcommon-dev libssl-dev
+```
+
 ## ⚡ The lightning quick easy method ⚡
 
 Simply run this command in your unix terminal and badabing badaboom, Mojibar will be installed!
